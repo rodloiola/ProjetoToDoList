@@ -6,6 +6,7 @@ const ListaListas = () => {
   const [listas, setListas] = useState([]);
   const [novaListaTitulo, setNovaListaTitulo] = useState('');
   const [novaListaDescricao, setNovaListaDescricao] = useState('');
+  const [editandoListaId, setEditandoListaId] = useState(null);
 
   useEffect(() => {
     fetchListas();
@@ -26,7 +27,7 @@ const ListaListas = () => {
         titulo: novaListaTitulo,
         descricao: novaListaDescricao
       });
-      fetchListas(); // Atualiza a lista de listas após a criação
+      fetchListas();
       setNovaListaTitulo('');
       setNovaListaDescricao('');
     } catch (error) {
@@ -34,10 +35,31 @@ const ListaListas = () => {
     }
   };
 
+  const handleEditarLista = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/listas/${editandoListaId}`, {
+        titulo: novaListaTitulo,
+        descricao: novaListaDescricao
+      });
+      fetchListas();
+      setNovaListaTitulo('');
+      setNovaListaDescricao('');
+      setEditandoListaId(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const iniciarEdicao = (lista) => {
+    setNovaListaTitulo(lista.titulo);
+    setNovaListaDescricao(lista.descricao);
+    setEditandoListaId(lista._id);
+  };
+
   const handleDeletarLista = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/listas/${id}`);
-      fetchListas(); // Atualiza a lista de listas após a deleção
+      fetchListas();
     } catch (error) {
       console.error(error);
     }
@@ -50,13 +72,13 @@ const ListaListas = () => {
         {listas.map((lista) => (
           <li key={lista._id}>
             {lista.titulo} - {lista.descricao}
+            <button onClick={() => iniciarEdicao(lista)}>Editar</button>
             <button onClick={() => handleDeletarLista(lista._id)}>Deletar</button>
-            {/* Adicione o componente ListaTarefas e passe o id da lista como prop */}
             <ListaTarefas listaId={lista._id} />
           </li>
         ))}
       </ul>
-      <h3>Nova Lista</h3>
+      <h3>{editandoListaId ? 'Editar Lista' : 'Nova Lista'}</h3>
       <input
         type="text"
         placeholder="Título"
@@ -69,7 +91,9 @@ const ListaListas = () => {
         value={novaListaDescricao}
         onChange={(e) => setNovaListaDescricao(e.target.value)}
       />
-      <button onClick={handleCriarLista}>Criar Lista</button>
+      <button onClick={editandoListaId ? handleEditarLista : handleCriarLista}>
+        {editandoListaId ? 'Editar Lista' : 'Criar Lista'}
+      </button>
     </div>
   );
 };
