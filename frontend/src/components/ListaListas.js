@@ -1,99 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import ListaTarefas from './ListaTarefas';
-import axios from 'axios';
+import React, { useState } from 'react';
+import PostItLista from './PostItLista';
+import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 
 const ListaListas = () => {
   const [listas, setListas] = useState([]);
-  const [novaListaTitulo, setNovaListaTitulo] = useState('');
-  const [novaListaDescricao, setNovaListaDescricao] = useState('');
-  const [editandoListaId, setEditandoListaId] = useState(null);
+  const [tituloLista, setTituloLista] = useState('');
 
-  useEffect(() => {
-    fetchListas();
-  }, []);
+  const adicionarLista = () => {
+    if (tituloLista.trim() === '') return; // Evita adicionar lista vazia
 
-  const fetchListas = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/listas');
-      setListas(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    setListas([...listas, { titulo: tituloLista, tarefas: [] }]);
+    setTituloLista('');
   };
 
-  const handleCriarLista = async () => {
-    try {
-      await axios.post('http://localhost:5000/api/listas', {
-        titulo: novaListaTitulo,
-        descricao: novaListaDescricao
-      });
-      fetchListas();
-      setNovaListaTitulo('');
-      setNovaListaDescricao('');
-    } catch (error) {
-      console.error(error);
-    }
+  const deletarLista = (index) => {
+    const novasListas = [...listas];
+    novasListas.splice(index, 1);
+    setListas(novasListas);
   };
 
-  const handleEditarLista = async () => {
-    try {
-      await axios.put(`http://localhost:5000/api/listas/${editandoListaId}`, {
-        titulo: novaListaTitulo,
-        descricao: novaListaDescricao
-      });
-      fetchListas();
-      setNovaListaTitulo('');
-      setNovaListaDescricao('');
-      setEditandoListaId(null);
-    } catch (error) {
-      console.error(error);
-    }
+  const editarLista = (index, novoTitulo) => {
+    const novasListas = [...listas];
+    novasListas[index].titulo = novoTitulo;
+    setListas(novasListas);
   };
 
-  const iniciarEdicao = (lista) => {
-    setNovaListaTitulo(lista.titulo);
-    setNovaListaDescricao(lista.descricao);
-    setEditandoListaId(lista._id);
-  };
-
-  const handleDeletarLista = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/listas/${id}`);
-      fetchListas();
-    } catch (error) {
-      console.error(error);
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Evita submissão do formulário
+      adicionarLista();
     }
   };
 
   return (
     <div>
-      <h2>Listas</h2>
-      <ul>
-        {listas.map((lista) => (
-          <li key={lista._id}>
-            {lista.titulo} - {lista.descricao}
-            <button onClick={() => iniciarEdicao(lista)}>Editar</button>
-            <button onClick={() => handleDeletarLista(lista._id)}>Deletar</button>
-            <ListaTarefas listaId={lista._id} />
-          </li>
-        ))}
-      </ul>
-      <h3>{editandoListaId ? 'Editar Lista' : 'Nova Lista'}</h3>
-      <input
-        type="text"
-        placeholder="Título"
-        value={novaListaTitulo}
-        onChange={(e) => setNovaListaTitulo(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Descrição"
-        value={novaListaDescricao}
-        onChange={(e) => setNovaListaDescricao(e.target.value)}
-      />
-      <button onClick={editandoListaId ? handleEditarLista : handleCriarLista}>
-        {editandoListaId ? 'Editar Lista' : 'Criar Lista'}
-      </button>
+      <Form onSubmit={(e) => e.preventDefault()}>
+        <Form.Group>
+          <Form.Control
+            type="text"
+            placeholder="Nome da nova lista"
+            value={tituloLista}
+            onChange={(e) => setTituloLista(e.target.value)}
+            onKeyPress={handleKeyPress} // Captura tecla "Enter"
+          />
+        </Form.Group>
+        <Button variant="primary" onClick={adicionarLista}>
+          Adicionar Lista
+        </Button>
+      </Form>
+      <Container>
+        <Row>
+          {listas.map((lista, index) => (
+            <Col key={index} xs={12} sm={6} md={4} lg={3}>
+              <PostItLista
+                titulo={lista.titulo}
+                tarefas={lista.tarefas}
+                onDeleteLista={() => deletarLista(index)}
+                onEditLista={(novoTitulo) => editarLista(index, novoTitulo)}
+              />
+            </Col>
+          ))}
+        </Row>
+      </Container>
     </div>
   );
 };
