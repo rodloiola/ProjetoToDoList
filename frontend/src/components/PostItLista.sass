@@ -1,13 +1,95 @@
 .post-it-lista
   border: 1px solid #ccc
-  border-radius: 5px
-  padding: 10px
-  margin: 10px
+  border-radius: 10px
+  padding: 15px
+  margin: 15px
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2)
-  width: 200px
+  width: 100%  // Ajuste de largura para se adaptar ao contêiner pai
+  max-width: 250px  // Máximo de largura
+  min-width: 200px  // Mínimo de largura
+  position: relative
+  display: flex
+  flex-direction: column
+  justify-content: space-between
 
-.tarefa
-  text-align: left
+  .tarefa
+    text-align: left
+    cursor: pointer
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-top: 5px  // Adicionado para espaçamento entre as tarefas
 
-  &.concluida
-    text-decoration: line-through
+    &.concluida
+      text-decoration: line-through
+
+  .post-it-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 10px  // Espaço abaixo do cabeçalho
+
+    .post-it-title
+      margin: 0
+      cursor: pointer
+      word-break: break-word  // Quebrar palavras longas
+
+    .delete-lista-btn
+      color: black
+      padding: 0
+      font-size: 1.2rem
+      background: none
+      border: none
+
+  .add-tarefa
+    display: flex
+    align-items: center
+    margin-top: 10px
+
+    .input-add
+      flex: 1
+      margin-right: 10px
+
+  .btn-add
+    background-color: #2196f3
+    color: white
+    border: none
+    padding: 8px
+    border-radius: 50%
+    cursor: pointer
+    font-size: 1.2rem
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 35px
+    height: 35px
+    transition: background-color 0.3s ease
+
+    &:hover
+      background-color: #1976d2
+
+  .post-it-footer
+    margin-top: 10px
+    display: flex
+    justify-content: flex-end
+
+  .cor-btn
+    background: none
+    border: none
+    padding: 0
+    font-size: 0.8rem
+    color: #2196f3
+
+  .delete-tarefa-btn
+    color: black
+    padding: 0
+    font-size: 1.2rem
+    background: none
+    border: none
+    cursor: pointer
+    margin-left: 5px
+
+  // Media query para telas pequenas
+  @media (max-width: 768px)
+    max-width: 100%  // Ajuste a largura máxima para telas pequenas
+    min-width: 100%  // Ajuste a largura mínima para telas pequenas

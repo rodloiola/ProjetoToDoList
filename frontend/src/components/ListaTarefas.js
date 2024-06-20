@@ -1,44 +1,64 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 
 const ListaTarefas = ({ tarefa, onDelete, onEdit }) => {
-  const [concluida, setConcluida] = useState(tarefa.concluida);
+  const [concluida, setConcluida] = useState(tarefa?.concluida || false);
   const [editando, setEditando] = useState(false);
-  const [nome, setNome] = useState(tarefa.nome);
+  const [nome, setNome] = useState(tarefa?.nome || '');
 
   const toggleConcluida = () => {
     setConcluida(!concluida);
+    if (onEdit) {
+      onEdit({ ...tarefa, concluida: !concluida });
+    }
   };
 
-  const toggleEditando = () => {
-    setEditando(!editando);
+  const handleNomeClick = () => {
+    setEditando(true);
   };
 
-  const handleEdit = () => {
-    onEdit(nome);
-    toggleEditando();
+  const handleNomeChange = (e) => {
+    setNome(e.target.value);
+  };
+
+  const handleNomeBlur = () => {
+    setEditando(false);
+    if (onEdit && nome !== tarefa.nome) {
+      onEdit({ ...tarefa, nome });
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleNomeBlur();
+    }
   };
 
   return (
     <div className={`tarefa ${concluida ? 'concluida' : ''}`}>
-      {editando ? (
-        <Form.Control
-          type="text"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-      ) : (
-        <Form.Check
-          type="checkbox"
-          label={nome}
-          checked={concluida}
-          onChange={toggleConcluida}
-        />
-      )}
-      <Button variant="danger" onClick={onDelete}>X</Button>
-      <Button variant="secondary" onClick={toggleEditando}>
-        {editando ? 'Salvar' : 'Editar'}
-      </Button>
+      <Form.Check
+        type="checkbox"
+        checked={concluida}
+        onChange={toggleConcluida}
+        label={
+          editando ? (
+            <Form.Control
+              type="text"
+              value={nome}
+              onChange={handleNomeChange}
+              onBlur={handleNomeBlur}
+              onKeyPress={handleKeyPress}
+              autoFocus
+            />
+          ) : (
+            <span onClick={handleNomeClick}>{nome}</span>
+          )
+        }
+      />
+      <button className="delete-tarefa-btn" onClick={onDelete}>
+        <span aria-hidden="true">×</span>
+      </button>
     </div>
   );
 };
