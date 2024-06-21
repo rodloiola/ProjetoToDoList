@@ -31,4 +31,4 @@ No terminal você deve utilizar o comando:
   ### `npm start`
 Pode ser que o comando npm start não funcione, pois react-script pode não ser encontrado no seu ambiente de desenvolvimento, para tanto deve utilizar o comando:
   ### `npm install`
-depois que for instalado o necessário é só chamar o npm start novamente.
+Depois que for instalado o necessário, é só chamar o npm start novamente.
