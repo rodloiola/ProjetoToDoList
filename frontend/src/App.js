@@ -6,7 +6,6 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Minha Aplicação de Lista de Tarefas</h1>
         <div style={{ marginBottom: '20px' }}></div> {/* Espaço entre título e componente ListaListas */}
       </header>
       <main>
